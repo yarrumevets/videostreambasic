@@ -1,0 +1,112 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Player</title>
+    <style>
+      body {
+        text-align: center;
+        background-color: black;
+      }
+
+      h1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        text-align: center;
+        font-size: 5rem;
+        color: red;
+        text-shadow: #000 1px 0 10px;
+      }
+
+      #videoPlayer {
+        max-width: 50%;
+        max-height: 50%;
+      }
+      #videoOverlay:fullscreen #videoPlayer {
+        max-width: none;
+        max-height: none;
+      }
+
+      #videoOverlay:fullscreen {
+        background-color: black;
+      }
+
+      #buttonExitFullScreen {
+        display: none;
+      }
+      #videoOverlay:fullscreen #buttonExitFullScreen {
+        position: fixed;
+        bottom: 41px;
+        left: 130px;
+        padding: 8px;
+        background-color: #555555;
+        color: white;
+        display: initial;
+        border: 0;
+        border-radius: 3px;
+      }
+      #videoOverlay:fullscreen video {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+    <script>
+      window.onload = function () {
+        const SAVE_POSITION_INTERVAL = 2000;
+
+        const url = new URL(window.location.href);
+        const videoUrl = url.searchParams.get("videourl");
+        const subtitlesFile = url.searchParams.get("subtitlesFile")
+
+        const videoPlayer = document.getElementById("videoPlayer");
+        const videoOverlay = document.getElementById("videoOverlay");
+
+        document.getElementById("videoTitle").innerHTML = videoUrl.split('/').pop();
+
+        // Full screen buttons
+        document.getElementById("buttonFullScreen").onclick = () => {
+          document.body.requestFullscreen.call(videoOverlay);
+        };
+        document.getElementById("buttonExitFullScreen").onclick = () => {
+          document.exitFullscreen();
+        };
+
+        // Set video url and time
+        if (videoUrl) {
+          videoPlayer.setAttribute("src", videoUrl);
+          videoPlayer.currentTime = localStorage[videoUrl] || 0;
+        }
+
+        // Load subtitels
+        if(subtitlesFile) {
+          videoPlayer.addEventListener('loadedmetadata', () => {
+            const tracks = videoPlayer.textTracks[0].mode = 'showing';
+            const subtitleTrack = document.getElementById("subtitlesTrack");
+            subtitleTrack.src = subtitlesFile;
+            console.log("subtitles: ", subtitlesFile);
+          });
+        }
+
+        // Continuously update the current position in local storage.
+        if (videoPlayer.getAttribute("src")) {
+          setInterval(() => {
+            localStorage[videoPlayer.getAttribute("src")] =
+              videoPlayer.currentTime;
+            }, SAVE_POSITION_INTERVAL);
+          }
+      };
+    </script>
+  </head>
+  <body>
+    <h1 id="videoTitle"></h1>
+    <div id="videoOverlay">
+      <video id="videoPlayer" src="" controls>
+        Your browser does not support the video tag.
+        <track id="subtitlesTrack" kind="subtitles" srclang="en" label="English">
+      </video>
+      <button id="buttonExitFullScreen">Exit Full Screen</button>
+    </div>
+    <div>
+      <button id="buttonFullScreen">Full Screen</button>
+    </div>
+  </body>
+</html>

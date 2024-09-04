@@ -1,0 +1,85 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Library</title>
+    <style>
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background-color: #222222;
+      }
+
+      h1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        text-align: center;
+        font-size: 5rem;
+        color: red;
+        text-shadow: #000 1px 0 10px;
+      }
+      .cover {
+        width: 200px;
+        height: 300px;
+      }
+
+      .cover:hover {
+        filter: grayscale(1);
+      }
+
+      #covers {
+        display: flex;
+        justify-content: center;
+        column-gap: 10px;
+      }
+
+    </style>
+    <script>
+      const isVideoFile = (fileName) => {
+        const x = fileName.split(".").pop();
+        const supportedVideoTypes = ["mkv", "mp4", "m4v"]; // not working: avi, ..
+        return supportedVideoTypes.includes(x);
+      };
+
+      window.onload = function () {
+        fetch("dir")
+          .then((response) => response.json())
+          .then((folderData) => {
+            folderData.forEach((folder) => {
+              const path = folder.file; // get this from data.
+              fetch("dir?path=" + path)
+                .then((response) => response.json())
+                .then((files) => {
+                  const coverLink = document.createElement("a");
+                  const cover = document.createElement("img");
+                  let subtitlesFile = "";
+                  let videoFileName = "";
+                  files.forEach((f) => {
+                    if (f.file === "cover.jpg") {
+                      // @todo allow png
+                      cover.src = "assets/" + path + "/" + f.file;
+                      cover.classList.add("cover");
+                      coverLink.append(cover);
+                    }
+                    if (f.file === "subtitles.vtt") {
+                      subtitlesFile = f.file;
+                    }
+                    if (isVideoFile(f.file)) {
+                      videoFileName = f.file;
+                    }
+                  });
+                  coverLink.href = `video.html?videourl=/assets/${path}/${videoFileName}&subtitlesFile=/assets/${path}/${subtitlesFile}`;
+                  document.getElementById("covers").append(coverLink);
+                });
+            });
+          });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Video Library</h1>
+    <div id="covers"></div>
+  </body>
+</html>
