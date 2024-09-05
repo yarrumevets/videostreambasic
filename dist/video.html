@@ -54,13 +54,24 @@
         const SAVE_POSITION_INTERVAL = 2000;
 
         const url = new URL(window.location.href);
-        const videoUrl = url.searchParams.get("videourl");
-        const subtitlesFile = url.searchParams.get("subtitlesFile")
+        let videoUrl = url.searchParams.get("videourl");
+        let subtitlesFile = url.searchParams.get("subtitlesFile")
 
         const videoPlayer = document.getElementById("videoPlayer");
         const videoOverlay = document.getElementById("videoOverlay");
 
         document.getElementById("videoTitle").innerHTML = videoUrl.split('/').pop();
+
+        const pathnameParts = window.location.pathname.split('/');
+        const basePath = pathnameParts.slice(1, -1).join('/'); // Gets the current directory path
+
+        // Adjust paths based on the current base path
+        if (videoUrl) {
+          videoUrl = basePath + videoUrl;
+        }
+        if (subtitlesFile) {
+          subtitlesFile = basePath + subtitlesFile;
+        }
 
         // Full screen buttons
         document.getElementById("buttonFullScreen").onclick = () => {
