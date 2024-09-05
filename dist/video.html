@@ -63,18 +63,11 @@
         document.getElementById("videoTitle").innerHTML = videoUrl.split('/').pop();
 
         const pathnameParts = window.location.pathname.split('/');
-
-        // Dynamically determine base path
-        const basePath = new URL('.', window.location.href).pathname; // Get the current directory path
-        console.log("basePath: ", basePath, " -- videoUrl: ", videoUrl);
+        const basePath = pathnameParts.slice(1, -1).join('/'); // Gets the current directory path
 
         // Adjust paths based on the current base path
-        if (videoUrl && !videoUrl.startsWith(basePath)) {
-          videoUrl = new URL(videoUrl, window.location.origin + basePath).href;
-        }
-        if (subtitlesFile && !subtitlesFile.startsWith(basePath)) {
-          subtitlesFile = new URL(subtitlesFile, window.location.origin + basePath).href;
-        }
+         videoUrl = basePath ? "/" + basePath + videoUrl : videoUrl;
+         subtitlesFile = basePath ? "/" + basePath + subtitlesFile : subtitlesFile;
 
         // Full screen buttons
         document.getElementById("buttonFullScreen").onclick = () => {
