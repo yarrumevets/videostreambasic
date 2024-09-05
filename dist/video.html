@@ -65,6 +65,8 @@
         const pathnameParts = window.location.pathname.split('/');
         const basePath = pathnameParts.slice(1, -1).join('/'); // Gets the current directory path
 
+        console.log("basePath: ", basePath, " -- videoUrl: ", videoUrl);
+
         // Adjust paths based on the current base path
         if (videoUrl) {
           videoUrl = basePath + videoUrl;
