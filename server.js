@@ -8,7 +8,7 @@ const port = config.port;
 // Get videos from webserver assets folder
 app.get("/dir", (req, res) => {
   providedPath = req.query.path;
-  let filePath = "dist/assets";
+  let filePath = "public/assets";
   if (providedPath) {
     filePath = `${filePath}/${providedPath}`;
   }
@@ -19,7 +19,7 @@ app.get("/dir", (req, res) => {
       return console.log("FS Error: " + err);
     }
     files.forEach(function (file) {
-      if (file[0] === '.') return; // ignore hidden files.
+      if (file[0] === ".") return; // ignore hidden files.
       const filePath = path.join(directoryPath, file);
       dirList.push({
         file,
@@ -30,7 +30,7 @@ app.get("/dir", (req, res) => {
   });
 });
 
-app.use("/", express.static(__dirname + "/dist"));
+app.use("/", express.static(__dirname + "/public"));
 
 // Start server
 app.listen(port, function () {
